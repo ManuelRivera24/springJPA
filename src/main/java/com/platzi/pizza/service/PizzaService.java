@@ -38,4 +38,25 @@ public class PizzaService { // Vamos a tener consultas dentro de nuestro servici
     public void delete(int idPizza){
         this.pizzaRepository.deleteById(idPizza);
     }
+
+    public List<PizzaEntity> getAvailable() {
+        System.out.println("Total de pizzas vegetarianas: " + this.pizzaRepository.countByVeganTrue());
+        return this.pizzaRepository.findAllByAvailableTrueOrderByPrice(); // Estamos llamando a la consulta que hicimos desde "PizzaRepository"
+    }
+
+    public PizzaEntity getByName(String name) {
+        return this.pizzaRepository.findFirstByAvailableTrueAndNameIgnoreCase(name).orElseThrow(() -> new RuntimeException("La pizza no existe"));
+    }
+
+    public List<PizzaEntity> getWhith(String ingredient) {
+        return this.pizzaRepository.findAllByAvailableTrueAndDescriptionContainingIgnoreCase(ingredient);
+    }
+
+    public List<PizzaEntity> getWhithout(String ingredient) {
+        return this.pizzaRepository.findAllByAvailableTrueAndDescriptionNotContainingIgnoreCase(ingredient);
+    }
+
+    public List<PizzaEntity> getCheapest(double price) {
+        return this.pizzaRepository.findTop3ByAvailableTrueAndPriceLessThanEqualOrderByPriceAsc(price);
+    }
 }

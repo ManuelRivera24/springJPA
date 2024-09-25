@@ -5,11 +5,19 @@ import com.platzi.pizza.persistence.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
+
+    private static final String DELIVERY = "D";
+    private static final String CARRYOUT = "C";
+    private static final String ON_SITE = "s";
 
     @Autowired
     public OrderService(OrderRepository orderRepository) {
@@ -18,5 +26,16 @@ public class OrderService {
 
     public List<OrderEntity> getAll(){
         return this.orderRepository.findAll();
+    }
+
+    // En estos dos metodos no se reciben parametros porque la logica se hace directamente en el cuerpo del metodo del servicio
+    public List<OrderEntity> getTodayOrders() {
+        LocalDateTime today = LocalDate.now().atTime(0, 0); // Esto hara que se cargue una variable con la fecha actual con la hora 00
+        return this.orderRepository.findAllByDateAfter(today);
+    }
+
+    public List<OrderEntity> getOutSideOrders() {
+        List<String> methods = Arrays.asList(DELIVERY, CARRYOUT);
+        return this.orderRepository.findAllByMethodIn(methods);
     }
 }

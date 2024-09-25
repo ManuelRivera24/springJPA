@@ -52,4 +52,29 @@ public class PizzaController {
         }
         return ResponseEntity.badRequest().build();
     }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<PizzaEntity>> getAvailable() {
+        return ResponseEntity.ok(this.pizzaService.getAvailable());
+    }
+
+    @GetMapping("/name/{name}") // Se le agrega un parametro porque ya existe uno que recibe solo un parametro
+    public ResponseEntity<PizzaEntity> getByName(@PathVariable String name) {
+        return ResponseEntity.ok(this.pizzaService.getByName(name));
+    }
+
+    @GetMapping("/with/{ingredient}")
+    public ResponseEntity<List<PizzaEntity>> getWith(@PathVariable String ingredient) {
+        return ResponseEntity.ok(this.pizzaService.getWhith(ingredient));
+    }
+
+    @GetMapping("/without/{ingredient}")
+    public ResponseEntity<List<PizzaEntity>> getWithout(@PathVariable String ingredient) {
+        return ResponseEntity.ok(this.pizzaService.getWhithout(ingredient));
+    }
+
+    @GetMapping("/cheapest/{price}")
+    public ResponseEntity<List<PizzaEntity>> getCheapestPizzas(@PathVariable double price) {
+        return ResponseEntity.ok(this.pizzaService.getCheapest(price));
+    }
 }
