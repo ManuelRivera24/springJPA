@@ -2,7 +2,9 @@ package com.platzi.pizza.web.controller;
 
 import com.platzi.pizza.persistence.entity.PizzaEntity;
 import com.platzi.pizza.service.PizzaService;
+import com.platzi.pizza.service.dto.UpdatePizzaPriceDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +20,11 @@ public class PizzaController {
         this.pizzaService = pizzaService;
     }
 
+    // Este metodo tambien se cambio, ahora no retorna una lista sino que retorna una pagina
     @GetMapping
-    public ResponseEntity<List<PizzaEntity>> getAll(){
-        return ResponseEntity.ok(this.pizzaService.getAll());
+    public ResponseEntity<Page<PizzaEntity>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "8") int elements){ // Ya no es @PathVariable, sino @RequestParam porque vamos a recibir parametros para esa consulta
+        return ResponseEntity.ok(this.pizzaService.getAll(page, elements));
     }
 
     @GetMapping("/{idPizza}")
@@ -53,9 +57,13 @@ public class PizzaController {
         return ResponseEntity.badRequest().build();
     }
 
+    // Este metodo se cambio (ya no va a retornar una lista sino que va a retornar una pagina)
     @GetMapping("/available")
-    public ResponseEntity<List<PizzaEntity>> getAvailable() {
-        return ResponseEntity.ok(this.pizzaService.getAvailable());
+    public ResponseEntity<Page<PizzaEntity>> getAvailable(@RequestParam(defaultValue = "0") int page,
+                                                          @RequestParam(defaultValue = "8") int elements,
+                                                          @RequestParam(defaultValue = "price") String sortBy,
+                                                          @RequestParam(defaultValue = "ASC") String sortDirection) { // Este nuevo parametro sirve para elegir si queremos ordenar ascendente o descendente
+        return ResponseEntity.ok(this.pizzaService.getAvailable(page, elements, sortBy, sortDirection)); // La pagina que queremos, cuantos elementos por pagina y por que queremos ordenar nuestra consulta
     }
 
     @GetMapping("/name/{name}") // Se le agrega un parametro porque ya existe uno que recibe solo un parametro
@@ -76,5 +84,14 @@ public class PizzaController {
     @GetMapping("/cheapest/{price}")
     public ResponseEntity<List<PizzaEntity>> getCheapestPizzas(@PathVariable double price) {
         return ResponseEntity.ok(this.pizzaService.getCheapest(price));
+    }
+
+    @PutMapping("/price")
+    public ResponseEntity<Void> updatePrice(@RequestBody UpdatePizzaPriceDto dto) {
+        if(this.pizzaService.exists(dto.getPizzaId())) {
+            this.pizzaService.updatePrice(dto);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 }

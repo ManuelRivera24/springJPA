@@ -43,5 +43,6 @@ public class OrderEntity {
     private CustomerEntity customer;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER) // EAGER significa que cuando tratemos de recuperar un OrderEntity automaticamente tambien me traiga esta relacion
+    @OrderBy("price ASC") // Como parametro se puede incluir por que elemento o atributo de "OrderItemEntity" se quiere ordenar
     private List<OrderItemEntity> items; // La relacion de orderEntity y orderItemEntity es diferente, porque son varios items los que pueden estar dentro de una misma orden
 }
