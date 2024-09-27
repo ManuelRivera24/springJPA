@@ -3,6 +3,7 @@ package com.platzi.pizza.persistence.repository;
 import com.platzi.pizza.persistence.entity.OrderEntity;
 import com.platzi.pizza.persistence.projection.OrderSummary;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.query.Param;
 
@@ -25,4 +26,7 @@ public interface OrderRepository extends ListCrudRepository<OrderEntity, Integer
             "where po.id_order = :orderId " +
             "group by po.id_order, cu.name, po.date, po.total", nativeQuery = true) // Importante: tener cuidado con los espacios, para que los tome como palabras separadas
     OrderSummary findSummary(@Param("orderId") int orderId);
+
+    @Procedure(value = "take_random_pizza_order", outputParameterName = "order_taken") // Aqui va el nombre del procedimiento que se creo en la base de datos y el valor de salida del procedimiento
+    boolean saveRandomOrder(@Param("id_customer") int idCustomer, @Param("method") String method);
 }

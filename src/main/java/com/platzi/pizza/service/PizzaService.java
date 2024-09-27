@@ -4,12 +4,14 @@ import com.platzi.pizza.persistence.entity.PizzaEntity;
 import com.platzi.pizza.persistence.repository.PizzaPagSortRepository;
 import com.platzi.pizza.persistence.repository.PizzaRepository;
 import com.platzi.pizza.service.dto.UpdatePizzaPriceDto;
+import com.platzi.pizza.service.exception.EmailApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 //import java.awt.print.Pageable;
 import java.util.List;
@@ -73,8 +75,14 @@ public class PizzaService { // Vamos a tener consultas dentro de nuestro servici
         return this.pizzaRepository.findTop3ByAvailableTrueAndPriceLessThanEqualOrderByPriceAsc(price);
     }
 
-    @Transactional
+    // Esta anotacion se usa cuando tenemos dos o mas llamados a la base de datos en el mismo metodo (con esta anotacion garantizamos que se ejecute todo o no se ejecute nada, no deja el proceso a medias, como en el caso de actualizar un registro y luego guardarlo, o se cumplen las dos cosas o no se hace nada)
+    @Transactional(noRollbackFor = EmailApiException.class) // Esta anotacion nos garantiza tener las cuatro caracteristicas "ACID" de manera cubierta y segura
     public void updatePrice(UpdatePizzaPriceDto dto) {
         this.pizzaRepository.updatePrice(dto); // En este parametro van las dos variables, internamente lo hace cuando se utiliza ese tipo de metodos
+        this.sendEmail(); // Esta linea se puede comentar, solo se utilizó de ejemplo para mostrar la funcion de la anotacion "@Transactional"
+    }
+
+    private void sendEmail() {
+        throw new EmailApiException();
     }
 }
