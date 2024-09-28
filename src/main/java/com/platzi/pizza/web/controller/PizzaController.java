@@ -59,6 +59,7 @@ public class PizzaController {
 
     // Este metodo se cambio (ya no va a retornar una lista sino que va a retornar una pagina)
     @GetMapping("/available")
+    @CrossOrigin(origins = "http://localhost:4200") // Con esto le indicamos a este metodo que va a ser solicitado o va a recibir peticiones a traves de un origen diferente al que se encuentra nuestra API
     public ResponseEntity<Page<PizzaEntity>> getAvailable(@RequestParam(defaultValue = "0") int page,
                                                           @RequestParam(defaultValue = "8") int elements,
                                                           @RequestParam(defaultValue = "price") String sortBy,
